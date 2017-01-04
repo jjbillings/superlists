@@ -29,12 +29,15 @@ class NewVisitorTest(unittest.TestCase):
 
         inputBox.send_keys(Keys.ENTER)
 
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Buy Beer',[row.text for row in rows])
-        self.assertIn('2: Buy vegan hummus', [row.text for row in rows])
+        self.checkForRowInTable('1: Buy Beer')
+        self.checkForRowInTable('2: Buy vegan hummus')
 
         self.fail("Finish Test?")
+
+    def checkForRowInTable(self, rowText):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(rowText,[row.text for row in rows])
 
     #User peaces out.
     def tearDown(self):
