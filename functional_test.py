@@ -25,8 +25,12 @@ class NewVisitorTest(unittest.TestCase):
             'Enter a to-do item'
         )
 
-        inputBox.send_keys('Buy Beer')
 
+        inputBox.send_keys('Buy Beer')
+        inputBox.send_keys(Keys.ENTER)
+
+        inputBox = self.browser.find_element_by_id('id_new_item')
+        inputBox.send_keys('Buy vegan hummus')
         inputBox.send_keys(Keys.ENTER)
 
         self.checkForRowInTable('1: Buy Beer')
