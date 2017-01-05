@@ -1,8 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from django.test import LiveServerTestCase
 import unittest
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 
     #User opens firefox
     def setUp(self):
@@ -11,7 +12,7 @@ class NewVisitorTest(unittest.TestCase):
 
     def testCanIStartAListAndRetrieveItLater(self):
         #User loads the To-Do Lists webpage
-        self.browser.get("http://localhost:8000")
+        self.browser.get(self.live_server_url)
 
         #check that the title is all good
         self.assertIn('To-Do Lists',self.browser.title)
@@ -46,5 +47,3 @@ class NewVisitorTest(unittest.TestCase):
     #User peaces out.
     def tearDown(self):
         self.browser.quit()
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
