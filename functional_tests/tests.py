@@ -59,14 +59,14 @@ class NewVisitorTest(LiveServerTestCase):
 
         #welcome user2, make sure user1's list isn't here.
         self.browser.get(self.live_server_url)
-        pageText = self.browser.find_elements_by_tag_name('body').text
+        pageText = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy Beer',pageText)
         self.assertNotIn('vegan',pageText)
 
         inputBox = self.browser.find_element_by_id('id_new_item')
         inputBox.send_keys('Buy wine')
         inputBox.send_keys(Keys.ENTER)
-        self.checkForRowInTable('Buy wine')
+        self.checkForRowInTable('1: Buy wine')
 
         #user2 gets their own URL
         user2ListUrl = self.browser.current_url
