@@ -10,7 +10,8 @@ class NewVisitorTest(LiveServerTestCase):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
 
-    def testCanIStartAListAndRetrieveItLater(self):
+
+    def testCanStartListForOneUser(self):
         #User loads the To-Do Lists webpage
         self.browser.get(self.live_server_url)
 
@@ -37,7 +38,45 @@ class NewVisitorTest(LiveServerTestCase):
         self.checkForRowInTable('1: Buy Beer')
         self.checkForRowInTable('2: Buy vegan hummus')
 
-        self.fail("Finish Test?")
+
+    def testMultipleUsersCanStartListsAtDifURLS(self):
+        #start a new list
+        self.browser.get(self.live_server_url)
+        inputBox = self.browser.find_element_by_id('id_new_item')
+        inputBox.send_keys('Buy Beer')
+        inputBox.send_keys(Keys.ENTER)
+
+        self.checkForRowInTable('1: Buy Beer')
+
+        user1ListUrl = self.browser.current_url
+        self.assertRegex(user1ListUrl,'/lists/.+')
+
+
+        ##Use a new browser session to ensure that no info for user1's lists
+        ##are coming through cookies
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        #welcome user2, make sure user1's list isn't here.
+        self.browser.get(self.live_server_url)
+        pageText = self.browser.find_elements_by_tag_name('body').text
+        self.assertNotIn('Buy Beer',pageText)
+        self.assertNotIn('vegan',pageText)
+
+        inputBox = self.browser.find_element_by_id('id_new_item')
+        inputBox.send_keys('Buy wine')
+        inputBox.send_keys(Keys.ENTER)
+        self.checkForRowInTable('Buy wine')
+
+        #user2 gets their own URL
+        user2ListUrl = self.browser.current_url
+        self.assertRegex(user2ListUrl,'/lists/.+')
+        self.assertNotEqual(user2ListUrl,user1ListUrl)
+
+        pageText = self.browser.find_elements_by_tag_name('body').text
+        self.assertNotIn('Buy Beer',pageText)
+        self.assertIn('Buy wine',pageText)
+
 
     def checkForRowInTable(self, rowText):
         table = self.browser.find_element_by_id('id_list_table')
