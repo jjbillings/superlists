@@ -71,6 +71,12 @@ class ListViewTest(TestCase):
         self.assertNotContains(response, 'other item1')
         self.assertNotContains(response, 'other item2')
 
+    def testPassesCorrectListToTemplate(self):
+        otherList = List.objects.create()
+        correctList = List.objects.create()
+        response = self.client.get('/lists/%d/' % (correctList.id))
+        self.assertEqual(response.context['list'],correctList)
+
 class NewListTest(TestCase):
 
     def testCanSavePOSTRequest(self):
@@ -84,3 +90,30 @@ class NewListTest(TestCase):
         response = self.client.post('/lists/new',data={'item_text': 'A new list item'})
         newList = List.objects.first()
         self.assertRedirects(response,'/lists/%d/'%(newList.id,))
+
+class NewItemTest(TestCase):
+
+    def testCanSaveNewItemToExistingList(self):
+        otherList = List.objects.create()
+        correctList = List.objects.create()
+
+        self.client.post(
+            '/lists/%d/add_item' % (correctList.id,),
+            data={'item_text': 'A new item for an existing list'}
+        )
+
+        self.assertEqual(Item.objects.count(), 1)
+        newItem = Item.objects.first()
+        self.assertEqual(newItem.text,'A new item for an existing list')
+        self.assertEqual(newItem.list,correctList)
+
+    def testShouldRedirectToListView(self):
+        otherList = List.objects.create()
+        correctList = List.objects.create()
+
+        response = self.client.post(
+            '/lists/%d/add_item' % (correctList.id,),
+            data={'item_text': 'A new item for an existing list'}
+        )
+
+        self.assertRedirects(response, '/lists/%d/'%(correctList.id))

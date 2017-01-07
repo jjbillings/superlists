@@ -73,7 +73,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertRegex(user2ListUrl,'/lists/.+')
         self.assertNotEqual(user2ListUrl,user1ListUrl)
 
-        pageText = self.browser.find_elements_by_tag_name('body').text
+        pageText = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy Beer',pageText)
         self.assertIn('Buy wine',pageText)
 
